@@ -1,0 +1,75 @@
+.help-section {
+  min-height: 100vh;
+}
+
+.accordion-button {
+  transition: all 0.3s ease;
+}
+
+.accordion-button:hover {
+  color: #cc0000 !important;
+}
+
+.accordion-content {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resource-card {
+  transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.faq-section, .contact-section, .resources-section {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thank-you-message {
+  animation: slideUp 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .help-header h1 {
+    font-size: 1.8rem !important;
+  }
+
+  .row > .col-lg-6 {
+    margin-bottom: 20px;
+  }
+}

@@ -1,107 +1,160 @@
-<div class="container">
-    <header class="my-4">
-        <h1 class="text-center">Bus Booking System</h1>
+<div class="container-fluid" style="background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); padding: 40px 20px; min-height: 100vh;">
+    <header class="my-5">
+        <h1 class="text-center" style="color: #cc0000; font-weight: 700; font-size: 36px;">🚌 Book Your Bus Tickets</h1>
+        <p class="text-center" style="color: #6b7280; font-size: 16px; margin-top: 10px; font-weight: 500;">Comfortable and Affordable Travel Across India</p>
     </header>
 
     <!-- Search Form -->
     <section>
-        <div class="container-fluid mt-5 d-flex justify-content-center">
-            <form class="search-form d-flex align-items-center shadow-lg">
+        <div class="container-lg mt-5 d-flex justify-content-center">
+            <form class="search-form d-flex align-items-center w-100" style="max-width: 1100px;">
               <div class="row w-100 text-white">
                 <div class="col-md-3 d-flex align-items-center">
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-bus-front"></i></span>
-                     <select class="form-select" name="fromLocation" [(ngModel)]="serachObj.fromLocation">
-                        <option value="" selected> From Location</option>
+                  <div class="input-group w-100">
+                    <span class="input-group-text" style="background-color: transparent; border: none; font-size: 20px;"><i class="bi bi-geo-alt"></i></span>
+                     <select class="form-select" name="fromLocation" [(ngModel)]="serachObj.fromLocation" style="color: #374151; border: 2px solid white;">
+                        <option value="" selected style="color: #9ca3af;"> From Location</option>
                         @for (item of locations$| async; track $index) {
-                            <option [value]="item.locationId"> {{item.locationName}}</option>
+                            <option [value]="item.locationId" style="color: #374151;"> {{item.locationName}}</option>
                         }
                      </select>
                   </div>
                 </div>
                 <div class="col-md-1 text-center d-flex align-items-center justify-content-center">
-                  <i class="bi bi-arrow-left-right fs-3"></i>
+                  <button type="button" class="btn" style="background-color: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.3s;">
+                    <i class="bi bi-arrow-left-right"></i>
+                  </button>
                 </div>
                 <div class="col-md-3 d-flex align-items-center">
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-bus-front"></i></span>
-                    <select class="form-select" name="toLocation" [(ngModel)]="serachObj.toLocation">
-                        <option value="" selected>  To Location</option>
+                  <div class="input-group w-100">
+                    <span class="input-group-text" style="background-color: transparent; border: none; font-size: 20px;"><i class="bi bi-geo-alt"></i></span>
+                    <select class="form-select" name="toLocation" [(ngModel)]="serachObj.toLocation" style="color: #374151; border: 2px solid white;">
+                        <option value="" selected style="color: #9ca3af;">  To Location</option>
                         @for (item of locations$| async; track $index) {
-                            <option [value]="item.locationId"> {{item.locationName}}</option>
+                            <option [value]="item.locationId" style="color: #374151;"> {{item.locationName}}</option>
                         }
                      </select>
                   </div>
                 </div>
                 <div class="col-md-3 d-flex align-items-center">
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
-                    <input type="date" class="form-control"  name="travelDate"  [(ngModel)]="serachObj.travelDate" placeholder="Date"  >
+                  <div class="input-group w-100">
+                    <span class="input-group-text" style="background-color: transparent; border: none; font-size: 20px;"><i class="bi bi-calendar-event"></i></span>
+                    <input type="date" class="form-control" name="travelDate" [(ngModel)]="serachObj.travelDate" placeholder="Date" style="color: #374151; border: 2px solid white; font-weight: 500;">
                   </div>
                 </div>
-                <div class="col-md-2 text-center">
-                  <button type="button" (click)="onSearch()" class="btn btn-light text-danger w-100">SEARCH BUSES</button>
+                <div class="col-md-2 text-center d-flex align-items-center gap-2">
+                  <button type="button" (click)="onSearch()" [disabled]="isLoading" class="btn btn-light w-100" style="font-weight: 600; border-radius: 8px; color: #990000; padding: 11px 20px; text-transform: uppercase; font-size: 13px; transition: all 0.3s;">
+                    @if(isLoading) {
+                      <span><i class="bi bi-hourglass-split"></i> Searching...</span>
+                    } @else {
+                      <span>Search</span>
+                    }
+                  </button>
                 </div>
               </div>
             </form>
           </div>
     </section>
 
-    <!-- Buses List -->
-    <section id="buses-list" class="my-4">
-        <h2>Available Buses</h2>
+    <!-- Status Messages -->
+    @if(successMessage) {
+      <div class="container-lg mt-4">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 8px; border: none; background: #d1fae5; color: #065f46; font-weight: 500;">
+          <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+          <button type="button" class="btn-close" (click)="successMessage=''" aria-label="Close"></button>
+        </div>
+      </div>
+    }
 
-        @if (busList.length ==0) {
-          <div class="row">
-            <div class="col-12 pt-5 text-center">
-              <p>Select From & to Location to Filter Bus</p>
-            </div>
-          </div>
-        } @else {
-          @for (item of busList; track $index) {
-            <div class="row">
+    @if(errorMessage) {
+      <div class="container-lg mt-4">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 8px; border: none; background: #fee2e2; color: #991b1b; font-weight: 500;">
+          <i class="bi bi-exclamation-circle me-2"></i>{{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage=''" aria-label="Close"></button>
+        </div>
+      </div>
+    }
+
+    <!-- Buses List -->
+    <section id="buses-list" class="my-5">
+        <div class="container-lg">
+            @if(busList.length > 0) {
+              <h2 style="color: #1f2937; font-weight: 700; margin-bottom: 30px; font-size: 28px;">✅ Available Buses ({{busList.length}})</h2>
+            }
+
+            @if (busList.length == 0 && !isLoading && !errorMessage) {
+              <div class="row">
                 <div class="col-12">
-                    <div class="card mb-3" style="background-color: #abb1b7;">
-                        <div class="row g-0">
-                          <div class="col-md-3 d-flex flex-column justify-content-center align-items-center">
-                            <h5 class="card-title">{{item.busName}}</h5>
-                            <p class="card-text">{{item.vendorName}}</p>
-                          </div>
-                          <div class="col-md-9">
-                            <div class="card-body row">
-                              <div class="col-md-2">
-                                <p class="card-text"><strong>{{item.departureTime | date:"hh:mm:ss"}}</strong></p>
-                                <p class="card-text">Departure</p>
+                  <div class="card" style="border-radius: 15px; text-align: center; padding: 80px 20px; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 3px dashed #d1d5db;">
+                    <i class="bi bi-bus-front" style="font-size: 56px; color: #9ca3af; margin-bottom: 20px;"></i>
+                    <p style="font-size: 18px; color: #6b7280; font-weight: 500; margin: 0;">👆 Select 'From' and 'To' locations with a date to search available buses</p>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if(isLoading) {
+              <div class="row">
+                <div class="col-12">
+                  <div class="card" style="border-radius: 15px; text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: none;">
+                    <div class="spinner-border" role="status" style="color: #cc0000; width: 50px; height: 50px;">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p style="font-size: 16px; color: #6b7280; font-weight: 500; margin-top: 20px;">Searching for buses...</p>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if(busList.length > 0) {
+              @for (item of busList; track $index) {
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card" style="border: none; border-radius: 12px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;"
+                             onmouseover="this.style.boxShadow='0 8px 20px rgba(204,0,0,0.2)'" onmouseout="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'">
+                            <div class="row g-0">
+                              <div class="col-md-2" style="background: linear-gradient(135deg, #cc0000 0%, #990000 100%); padding: 30px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                                <h5 class="card-title" style="margin: 0; font-weight: 700; font-size: 18px;">{{item.busName}}</h5>
+                                <p class="card-text" style="margin: 8px 0 0 0; font-size: 12px; opacity: 0.9;">{{item.vendorName}}</p>
+                                <span class="badge" style="margin-top: 12px; background-color: #fbbf24; color: #cc0000; font-weight: 600; padding: 6px 12px; border-radius: 20px;">⭐ 4.5/5</span>
                               </div>
-                              <div class="col-md-2">
-                                <p class="card-text"><strong>16 hr</strong></p>
-                                <p class="card-text">Duration</p>
-                              </div>
-                              <div class="col-md-2">
-                                <p class="card-text"><strong>{{item.arrivalTime | date:"hh:mm:ss"}}</strong></p>
-                                <p class="card-text">Arrival</p>
-                                <p class="text-danger">{{item.arrivalTime | date:'dd-MM-yyyy'}}</p>
-                              </div>
-                              <div class="col-md-2">
-                                <p class="card-text"><strong>4.5</strong> ⭐</p>
-                                <p class="card-text">567 Ratings</p>
-                              </div>
-                              <div class="col-md-2">
-                                <p class="card-text"><strong>INR {{item.price}}</strong></p>
-                                <p class="card-text">{{item.availableSeats}} Seats available Out Of {{item.totalSeats}}</p>
-                              </div>
-                              <div class="col-md-2 text-end">
-                                <button class="btn btn-danger" [routerLink]="['/booking', item.scheduleId]"  routerLinkActive="router-link-active" >Book Seat</button>
+                              <div class="col-md-10">
+                                <div class="card-body" style="padding: 25px;">
+                                  <div class="row" style="align-items: center;">
+                                    <div class="col-md-2" style="text-align: center; border-right: 1px solid #e5e7eb;">
+                                      <p style="font-size: 22px; font-weight: 700; color: #1f2937; margin: 0;">{{item.departureTime | date:'HH:mm'}}</p>
+                                      <p style="font-size: 11px; color: #9ca3af; margin: 6px 0 0 0; font-weight: 500;">DEPART</p>
+                                    </div>
+                                    <div class="col-md-2" style="text-align: center; position: relative;">
+                                      <div style="height: 2px; background: linear-gradient(90deg, transparent, #d1d5db, transparent);"></div>
+                                      <div style="font-size: 11px; color: #6b7280; font-weight: 600; background: white; padding: 0 8px; display: inline-block; position: relative; top: -10px;">{{item.journeyDuration || '16 hrs'}}</div>
+                                      <p style="font-size: 11px; color: #9ca3af; margin: 6px 0 0 0; font-weight: 500;">JOURNEY</p>
+                                    </div>
+                                    <div class="col-md-2" style="text-align: center; border-left: 1px solid #e5e7eb;">
+                                      <p style="font-size: 22px; font-weight: 700; color: #1f2937; margin: 0;">{{item.arrivalTime | date:'HH:mm'}}</p>
+                                      <p style="font-size: 11px; color: #9ca3af; margin: 6px 0 0 0; font-weight: 500;">ARRIVE</p>
+                                      <p style="font-size: 10px; color: #cc0000; font-weight: 600; margin: 6px 0 0 0;">+1 day</p>
+                                    </div>
+                                    <div class="col-md-2" style="text-align: center; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+                                      <p style="font-size: 24px; font-weight: 700; color: #cc0000; margin: 0;">₹{{item.price}}</p>
+                                      <p style="font-size: 11px; color: #9ca3af; margin: 6px 0 0 0; font-weight: 500;">per seat</p>
+                                    </div>
+                                    <div class="col-md-2" style="text-align: center;">
+                                      <p style="font-size: 12px; color: #6b7280; margin: 0; font-weight: 500;"><strong style="color: #1f2937;">{{item.totalSeats}}</strong> Seats</p>
+                                      <p style="font-size: 11px; color: #9ca3af; margin: 4px 0 0 0; font-weight: 500;">Available</p>
+                                    </div>
+                                    <div class="col-md-2" style="text-align: center;">
+                                      <button class="btn btn-red" [routerLink]="['/booking', item.scheduleId]" routerLinkActive="router-link-active" style="border-radius: 8px; font-weight: 600; text-transform: uppercase; font-size: 12px; padding: 10px 20px; transition: all 0.3s; background: #cc0000; color: white; border: none;">Book Now →</button>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-        }
-       
-        
+              }
+            }
+        </div>
     </section>
 </div>

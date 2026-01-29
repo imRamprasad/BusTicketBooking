@@ -1,0 +1,151 @@
+<section class="help-section py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); min-height: 100vh;">
+  <div class="container-lg">
+    <!-- Header -->
+    <div class="help-header mb-5" style="text-align: center;">
+      <h1 style="color: #333; font-weight: 700; font-size: 2.5rem; margin-bottom: 10px;">
+        <i class="bi bi-headset"></i> Help & Support Center
+      </h1>
+      <p style="color: #666; font-size: 16px;">Find answers to your questions and get support whenever you need it</p>
+    </div>
+
+    <!-- Quick Contact Cards -->
+    <div class="row mb-5" style="gap: 15px; justify-content: center;">
+      @for (contact of contactInfo; track contact.type) {
+        <div class="col-md-5 col-lg-3" style="display: flex;">
+          <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; overflow: hidden;">
+            <div class="card-body" style="padding: 20px; text-align: center;">
+              <i [ngClass]="contact.icon" style="font-size: 2rem; margin-bottom: 10px; display: block;" [style.color]="contact.color"></i>
+              <p style="color: #999; font-size: 12px; margin: 0; text-transform: uppercase;">{{ contact.type }}</p>
+              <p style="color: #333; font-weight: 600; margin: 10px 0 0 0;">{{ contact.value }}</p>
+              <button (click)="copyToClipboard(contact.value)" class="btn btn-sm" style="margin-top: 10px; background: #f0f0f0; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: #666;">
+                <i class="bi bi-clipboard"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="row" style="gap: 30px;">
+      <!-- FAQs Section -->
+      <div class="col-lg-6">
+        <div class="faq-section" style="background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); padding: 30px; overflow: hidden;">
+          <h3 style="color: #333; font-weight: 700; margin-bottom: 25px; font-size: 20px;">
+            <i class="bi bi-question-circle"></i> Frequently Asked Questions
+          </h3>
+
+          <!-- FAQ Accordion -->
+          @for (faq of faqs; track faq.id) {
+            <div class="accordion-item" style="border-bottom: 1px solid #e0e0e0; padding-bottom: 0; margin-bottom: 0;">
+              <button (click)="toggleAccordion(faq.id)" class="accordion-button" style="width: 100%; padding: 18px 0; text-align: left; border: none; background: none; color: #333; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease;"
+                [style.color]="activeAccordion === faq.id ? '#cc0000' : '#333'">
+                <span>{{ faq.question }}</span>
+                <i class="bi" [ngClass]="activeAccordion === faq.id ? 'bi-chevron-up' : 'bi-chevron-down'" style="margin-left: 10px;"></i>
+              </button>
+              @if (activeAccordion === faq.id) {
+                <div class="accordion-content" style="padding-bottom: 15px; animation: slideDown 0.3s ease;">
+                  <p style="color: #666; line-height: 1.6; margin: 0; font-size: 14px;">{{ faq.answer }}</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Contact Form Section -->
+      <div class="col-lg-6">
+        <div class="contact-section" style="background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); padding: 30px; overflow: hidden;">
+          <h3 style="color: #333; font-weight: 700; margin-bottom: 25px; font-size: 20px;">
+            <i class="bi bi-envelope-open"></i> Send us a Message
+          </h3>
+
+          @if (showThankYou) {
+            <div class="thank-you-message" style="text-align: center; padding: 40px 20px; animation: slideUp 0.4s ease;">
+              <i class="bi bi-check-circle" style="font-size: 3rem; color: #28a745; display: block; margin-bottom: 15px;"></i>
+              <h4 style="color: #28a745; font-weight: 700; margin-bottom: 10px;">Thank You!</h4>
+              <p style="color: #666;">Your message has been sent successfully. We'll get back to you within 24 hours.</p>
+            </div>
+          } @else {
+            <form style="display: flex; flex-direction: column; gap: 15px;">
+              <!-- Name -->
+              <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Full Name *</label>
+                <input type="text" [(ngModel)]="contactForm.name" name="name" placeholder="Your name" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px 12px; font-size: 14px;">
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Email Address *</label>
+                <input type="email" [(ngModel)]="contactForm.email" name="email" placeholder="your@email.com" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px 12px; font-size: 14px;">
+              </div>
+
+              <!-- Category -->
+              <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Category *</label>
+                <select [(ngModel)]="contactForm.category" name="category" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px 12px; font-size: 14px;">
+                  @for (cat of categories; track cat.id) {
+                    <option [value]="cat.id">{{ cat.icon }} {{ cat.name }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Subject -->
+              <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Subject *</label>
+                <input type="text" [(ngModel)]="contactForm.subject" name="subject" placeholder="Subject of your enquiry" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px 12px; font-size: 14px;">
+              </div>
+
+              <!-- Message -->
+              <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Message *</label>
+                <textarea [(ngModel)]="contactForm.message" name="message" placeholder="Please describe your issue or enquiry in detail..." rows="5" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px 12px; font-size: 14px; resize: vertical;"></textarea>
+              </div>
+
+              <!-- Submit Button -->
+              <button (click)="submitContactForm()" type="button" class="btn" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 8px; padding: 12px; font-weight: 600; border: none; cursor: pointer; font-size: 15px; transition: all 0.3s;">
+                <i class="bi bi-send"></i> Send Message
+              </button>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Resources Section -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="resources-section" style="background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); padding: 30px; overflow: hidden;">
+          <h3 style="color: #333; font-weight: 700; margin-bottom: 25px; font-size: 20px;">
+            <i class="bi bi-book"></i> Additional Resources
+          </h3>
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="resource-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s;">
+                <h5 style="margin: 0 0 10px 0; font-weight: 700;">📚 How to Book</h5>
+                <p style="margin: 0; font-size: 14px; opacity: 0.9;">Step-by-step guide to booking your bus tickets</p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="resource-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s;">
+                <h5 style="margin: 0 0 10px 0; font-weight: 700;">🔒 Security & Safety</h5>
+                <p style="margin: 0; font-size: 14px; opacity: 0.9;">Your safety and data protection is our priority</p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="resource-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s;">
+                <h5 style="margin: 0 0 10px 0; font-weight: 700;">💳 Payment Methods</h5>
+                <p style="margin: 0; font-size: 14px; opacity: 0.9;">Information about accepted payment methods</p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="resource-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 20px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.3s;">
+                <h5 style="margin: 0 0 10px 0; font-weight: 700;">📱 Mobile App</h5>
+                <p style="margin: 0; font-size: 14px; opacity: 0.9;">Download our app for seamless booking experience</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

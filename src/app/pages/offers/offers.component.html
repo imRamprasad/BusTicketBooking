@@ -1,0 +1,133 @@
+<section class="offers-section py-5" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 50%, #f39c12 100%); min-height: 100vh;">
+  <div class="container-lg">
+    <!-- Header -->
+    <div class="offers-header mb-5" style="text-align: center; color: white;">
+      <h1 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+        <i class="bi bi-gift-fill"></i> Exclusive Offers & Deals
+      </h1>
+      <p style="font-size: 18px; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Save more on your bus tickets with our amazing deals</p>
+    </div>
+
+    <!-- Coupon Applier -->
+    <div class="row mb-5">
+      <div class="col-md-8 mx-auto">
+        <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden;">
+          <div class="card-body" style="padding: 30px; background: linear-gradient(90deg, #fff 0%, #f8f9fa 100%);">
+            <h5 style="color: #333; font-weight: 700; margin-bottom: 20px;">
+              <i class="bi bi-ticket2"></i> Have a Coupon Code?
+            </h5>
+            <div class="input-group" style="gap: 10px;">
+              <input type="text" [(ngModel)]="couponCode" placeholder="Enter your coupon code here" class="form-control" style="border-radius: 10px; border: 2px solid #e0e0e0; padding: 12px 15px; font-size: 16px;">
+              <button (click)="applyCoupon()" class="btn" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 10px; padding: 12px 30px; font-weight: 600; white-space: nowrap;">
+                <i class="bi bi-check-circle"></i> Apply
+              </button>
+            </div>
+            @if (appliedCoupon) {
+              <div class="alert alert-success mt-3" style="border-radius: 10px; border: none; background: linear-gradient(90deg, #d4edda 0%, #c3e6cb 100%);">
+                <i class="bi bi-check-circle-fill"></i> <strong>{{ appliedCoupon.title }}</strong> applied successfully! Save ₹{{ appliedCoupon.maxDiscount }}
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Categories -->
+    <div class="categories-filter mb-5" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button (click)="selectedCategory = 'all'; onCategoryChange()" [class.active]="selectedCategory === 'all'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'all' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'all' ? 'white' : '#666'">
+        All Offers
+      </button>
+      <button (click)="selectedCategory = 'first-time'; onCategoryChange()" [class.active]="selectedCategory === 'first-time'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'first-time' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'first-time' ? 'white' : '#666'">
+        🎉 First Time
+      </button>
+      <button (click)="selectedCategory = 'seasonal'; onCategoryChange()" [class.active]="selectedCategory === 'seasonal'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'seasonal' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'seasonal' ? 'white' : '#666'">
+        ☀️ Seasonal
+      </button>
+      <button (click)="selectedCategory = 'group'; onCategoryChange()" [class.active]="selectedCategory === 'group'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'group' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'group' ? 'white' : '#666'">
+        👥 Group
+      </button>
+      <button (click)="selectedCategory = 'student'; onCategoryChange()" [class.active]="selectedCategory === 'student'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'student' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'student' ? 'white' : '#666'">
+        📚 Student
+      </button>
+      <button (click)="selectedCategory = 'senior'; onCategoryChange()" [class.active]="selectedCategory === 'senior'" class="btn" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; border: none; background: white; color: #666; cursor: pointer; transition: all 0.3s;" [style.backgroundColor]="selectedCategory === 'senior' ? '#cc0000' : 'white'" [style.color]="selectedCategory === 'senior' ? 'white' : '#666'">
+        👴 Senior
+      </button>
+    </div>
+
+    <!-- Offers Grid -->
+    <div class="row">
+      @if (offers.length === 0) {
+        <div class="col-12">
+          <div class="alert alert-info" style="border-radius: 15px; text-align: center; padding: 60px 20px; background: white; border: 2px dashed #ccc;">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #999;"></i>
+            <h4 style="margin-top: 20px; color: #666;">No offers available in this category</h4>
+          </div>
+        </div>
+      } @else {
+        @for (offer of offers; track offer.offerId) {
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="offer-card" style="border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15); transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; background: white;">
+              <!-- Card Header with Image/Icon -->
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center; color: white; font-size: 3rem;">
+                {{ offer.image }}
+              </div>
+
+              <!-- Card Body -->
+              <div style="padding: 25px; flex-grow: 1; display: flex; flex-direction: column;">
+                <!-- Discount Badge -->
+                <div style="position: relative; margin-bottom: 15px;">
+                  <div style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; padding: 8px 15px; border-radius: 25px; display: inline-block; font-weight: 700; font-size: 14px;">
+                    Save {{ offer.discount }}%
+                  </div>
+                </div>
+
+                <!-- Title & Description -->
+                <h5 style="color: #333; font-weight: 700; margin-bottom: 8px; font-size: 18px;">{{ offer.title }}</h5>
+                <p style="color: #666; font-size: 14px; margin-bottom: 15px; flex-grow: 1;">{{ offer.description }}</p>
+
+                <!-- Offer Details -->
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
+                  <p style="color: #666; margin: 5px 0;">
+                    <strong>Min Amount:</strong> ₹{{ offer.minAmount }}
+                  </p>
+                  <p style="color: #666; margin: 5px 0;">
+                    <strong>Max Discount:</strong> ₹{{ offer.maxDiscount }}
+                  </p>
+                  <p style="color: #cc0000; margin: 5px 0; font-weight: 600;">
+                    <i class="bi bi-calendar-event"></i> Valid for {{ getDaysRemaining(offer.validTo) }} days
+                  </p>
+                </div>
+
+                <!-- Usage Progress -->
+                <div style="margin-bottom: 15px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; color: #666;">
+                    <span>Usage</span>
+                    <span>{{ offer.usageCount }}/{{ offer.usageLimit }}</span>
+                  </div>
+                  <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); height: 100%; width: {{ getProgressPercentage(offer.usageCount, offer.usageLimit) }}%;"></div>
+                  </div>
+                </div>
+
+                <!-- Coupon Code -->
+                <div style="background: #f0f0f0; padding: 12px; border-radius: 10px; border: 2px dashed #cc0000; margin-bottom: 15px; text-align: center;">
+                  <p style="color: #999; font-size: 11px; margin: 0 0 5px 0; text-transform: uppercase;">Code</p>
+                  <p style="color: #cc0000; font-weight: 700; font-size: 16px; margin: 0; font-family: monospace; letter-spacing: 2px;">{{ offer.couponCode }}</p>
+                </div>
+
+                <!-- Copy Button -->
+                <button (click)="copyCouponCode(offer.couponCode)" class="btn w-100" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 10px; padding: 12px; font-weight: 600; border: none; transition: all 0.3s; cursor: pointer;" [style.backgroundColor]="copiedCode === offer.couponCode ? '#28a745' : ''">
+                  @if (copiedCode === offer.couponCode) {
+                    <i class="bi bi-check-circle"></i> Copied!
+                  } @else {
+                    <i class="bi bi-clipboard"></i> Copy Code
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,224 @@
+<section class="buses-section py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh;">
+  <div class="container-lg">
+    <!-- Header -->
+    <div class="buses-header mb-5">
+      <h1 style="color: #cc0000; font-weight: 700; font-size: 2.5rem; margin-bottom: 10px;">
+        <i class="bi bi-bus-front-fill"></i> Explore Our Bus Fleet
+      </h1>
+      <p style="color: #666; font-size: 16px;">Browse and compare all available buses</p>
+    </div>
+
+    <!-- Search Bar (Location to Location) -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden; background: linear-gradient(90deg, #cc0000 0%, #990000 100%);">
+          <div class="card-body" style="padding: 25px;">
+            <div class="row g-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+              <!-- From Location -->
+              <div>
+                <label style="font-weight: 600; color: white; margin-bottom: 8px; display: block; font-size: 14px;">From Location</label>
+                <select [(ngModel)]="searchObj.fromLocation" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid white; padding: 10px; font-weight: 500;">
+                  <option value="">Select From Location</option>
+                  @for (location of locations; track location.locationId) {
+                    <option [value]="location.locationId">{{ location.locationName }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- To Location -->
+              <div>
+                <label style="font-weight: 600; color: white; margin-bottom: 8px; display: block; font-size: 14px;">To Location</label>
+                <select [(ngModel)]="searchObj.toLocation" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid white; padding: 10px; font-weight: 500;">
+                  <option value="">Select To Location</option>
+                  @for (location of locations; track location.locationId) {
+                    <option [value]="location.locationId">{{ location.locationName }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Travel Date -->
+              <div>
+                <label style="font-weight: 600; color: white; margin-bottom: 8px; display: block; font-size: 14px;">Travel Date</label>
+                <input type="date" [(ngModel)]="searchObj.travelDate" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid white; padding: 10px; font-weight: 500;">
+              </div>
+
+              <!-- Reset Button -->
+              <div>
+                <button (click)="resetFilters()" class="btn w-100" style="background: white; color: #cc0000; border-radius: 8px; font-weight: 600; padding: 10px; border: none; cursor: pointer; transition: all 0.3s;">
+                  <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filters Section -->
+    <div class="row mb-5">
+      <div class="col-lg-3">
+        <div class="card filter-card" style="border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <div class="card-header" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 12px 12px 0 0; font-weight: 600; padding: 15px;">
+            <i class="bi bi-funnel"></i> Filters & Search
+          </div>
+          <div class="card-body" style="padding: 20px;">
+            <!-- Search -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Search</label>
+              <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px;">
+                <input type="text" [(ngModel)]="searchText" (keyup.enter)="onSearchClick()" placeholder="Search buses..." class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px;">
+                <button (click)="onSearchClick()" class="btn" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 8px; font-weight: 600; padding: 10px 15px; border: none; cursor: pointer; white-space: nowrap;">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Vendor Filter -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Vendor</label>
+              <select [(ngModel)]="filterVendor" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0;">
+                <option value="">All Vendors</option>
+                @for (vendor of vendors; track vendor.vendorId) {
+                  <option [value]="vendor.vendorId">{{ vendor.vendorName }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Bus Type Filter -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Bus Type</label>
+              <select [(ngModel)]="filterBusType" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0;">
+                <option value="">All Types</option>
+                @for (type of busTypes; track type) {
+                  <option [value]="type">{{ type }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Price Range</label>
+              <select [(ngModel)]="filterPriceRange" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0;">
+                <option value="all">All Prices</option>
+                <option value="0-500">₹0 - ₹500</option>
+                <option value="500-1000">₹500 - ₹1000</option>
+                <option value="1000-1500">₹1000 - ₹1500</option>
+                <option value="1500-2500">₹1500 - ₹2500</option>
+                <option value="2500-5000">₹2500 - ₹5000</option>
+              </select>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Minimum Rating</label>
+              <select [(ngModel)]="filterRating" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0;">
+                <option value="">All Ratings</option>
+                <option value="4">⭐ 4+ Stars</option>
+                <option value="3">⭐ 3+ Stars</option>
+              </select>
+            </div>
+
+            <!-- Sort By -->
+            <div class="mb-4">
+              <label style="font-weight: 600; margin-bottom: 8px; color: #333;">Sort By</label>
+              <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0;">
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="rating">Best Rated</option>
+                <option value="departure">Earliest Departure</option>
+              </select>
+            </div>
+
+            <!-- Reset Button -->
+            <button (click)="resetFilters()" class="btn btn-outline-danger w-100" style="border-radius: 8px; font-weight: 600;">
+              <i class="bi bi-arrow-clockwise"></i> Reset Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buses List -->
+      <div class="col-lg-9">
+        @if (getPaginatedBuses().length === 0) {
+          <div class="alert alert-info" style="border-radius: 12px; text-align: center; padding: 40px;">
+            <i class="bi bi-info-circle" style="font-size: 2rem; color: #0c63e4;"></i>
+            <h4 style="margin-top: 15px; color: #0c63e4;">No buses found</h4>
+            <p style="margin-top: 10px; color: #666;">Try adjusting your filters or search criteria</p>
+          </div>
+        } @else {
+          <div class="buses-list">
+            @for (bus of getPaginatedBuses(); track bus.scheduleId) {
+              <div class="bus-card" style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 20px; transition: all 0.3s ease;">
+                <div class="bus-card-body" style="padding: 20px; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; align-items: center;">
+                  <!-- Bus Info -->
+                  <div>
+                    <h5 style="color: #cc0000; font-weight: 700; margin-bottom: 5px;">{{ bus.vendorName }}</h5>
+                    <p style="color: #999; font-size: 13px; margin: 0;">
+                      <strong>{{ bus.busType }}</strong>
+                    </p>
+                    <div style="margin-top: 10px; display: flex; gap: 5px;">
+                      @for (star of getStarArray(bus.rating); track $index) {
+                        <span style="color: #ffc107; font-size: 14px;">★</span>
+                      }
+                      @for (star of getEmptyStars(bus.rating); track $index) {
+                        <span style="color: #ddd; font-size: 14px;">★</span>
+                      }
+                      <span style="font-size: 12px; color: #666; margin-left: 5px;">({{ bus.rating || 0 }}/5)</span>
+                    </div>
+                  </div>
+
+                  <!-- Journey Details -->
+                  <div style="text-align: center;">
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                      <div>
+                        <p style="font-size: 18px; font-weight: 700; color: #333; margin: 0;">{{ bus.departureTime }}</p>
+                        <p style="font-size: 12px; color: #999; margin: 0; margin-top: 3px;">Departure</p>
+                      </div>
+                      <div style="color: #cc0000; font-size: 12px; font-weight: 600;">
+                        <p style="margin: 0;">Duration</p>
+                      </div>
+                      <div>
+                        <p style="font-size: 18px; font-weight: 700; color: #333; margin: 0;">{{ bus.reachingTime }}</p>
+                        <p style="font-size: 12px; color: #999; margin: 0; margin-top: 3px;">Arrival</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Pricing & Booking -->
+                  <div style="text-align: right;">
+                    <div style="margin-bottom: 15px;">
+                      <p style="color: #999; font-size: 13px; margin: 0;">Starting from</p>
+                      <h4 style="color: #cc0000; font-weight: 700; font-size: 24px; margin: 5px 0;">₹{{ bus.price }}</h4>
+                      <p style="color: #666; font-size: 12px; margin: 0;">{{ bus.totalSeats }} Seats Available</p>
+                    </div>
+                    <button (click)="bookBus(bus.scheduleId)" class="btn" style="background: linear-gradient(90deg, #cc0000 0%, #990000 100%); color: white; border-radius: 8px; padding: 10px 20px; font-weight: 600; width: 100%;">
+                      <i class="bi bi-ticket-perforated"></i> Book Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages > 1) {
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+              <button (click)="goToPage(currentPage - 1)" class="btn btn-outline-danger" [disabled]="currentPage === 1" style="border-radius: 8px;">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              @for (page of [].constructor(totalPages); track $index) {
+                <button (click)="goToPage($index + 1)" class="btn" [class.active]="currentPage === $index + 1"
+                  [style]="currentPage === $index + 1 ? 'background-color: #cc0000; color: white; border-radius: 8px; padding: 8px 12px; font-weight: 600;' : 'border: 1px solid #cc0000; color: #cc0000; border-radius: 8px; padding: 8px 12px; font-weight: 600;'">
+                  {{ $index + 1 }}
+                </button>
+              }
+              <button (click)="goToPage(currentPage + 1)" class="btn btn-outline-danger" [disabled]="currentPage === totalPages" style="border-radius: 8px;">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</section>

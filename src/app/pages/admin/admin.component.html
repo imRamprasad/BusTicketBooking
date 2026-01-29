@@ -1,0 +1,190 @@
+<section class="admin-section">
+    <div class="container-lg py-5">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1>Bus Schedule Management</h1>
+            <p>Manage bus routes, schedules, and vendors</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        @if (successMessage) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> {{ successMessage }}
+            </div>
+        }
+        @if (errorMessage) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+            </div>
+        }
+
+        <!-- Tabs Navigation -->
+        <div class="admin-tabs">
+            <button class="tab-button" [class.active]="activeTab === 'all'" (click)="switchTab('all')">
+                <i class="bi bi-list"></i> All Schedules
+            </button>
+            <button class="tab-button" [class.active]="activeTab === 'nagpur-pune'" (click)="switchTab('nagpur-pune')">
+                <i class="bi bi-pin-map"></i> Nagpur to Pune
+            </button>
+            <button class="tab-button" [class.active]="activeTab === 'add'" (click)="switchTab('add'); openAddForm()">
+                <i class="bi bi-plus-circle"></i> Add Schedule
+            </button>
+        </div>
+
+        <!-- Quick Create Nagpur-Pune Schedules -->
+        @if (activeTab === 'nagpur-pune') {
+            <div class="quick-create-section">
+                <h3>Quick Setup for Nagpur → Pune (18-Aug-2024)</h3>
+                <p>Click below to create 4 schedules with different timings</p>
+                <button class="btn btn-red" (click)="createNagpurPuneSchedules()">
+                    <i class="bi bi-lightning-charge"></i> Create All Schedules
+                </button>
+            </div>
+        }
+
+        <!-- Add/Edit Form -->
+        @if (showForm) {
+            <div class="form-section">
+                <div class="form-card">
+                    <h3>{{ editingSchedule ? 'Edit Schedule' : 'Add New Schedule' }}</h3>
+
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Vendor *</label>
+                                <select [(ngModel)]="newSchedule.vendorId" (change)="newSchedule.vendorId = +newSchedule.vendorId" name="vendor" class="form-control">
+                                    <option value="">Select Vendor</option>
+                                    @for (vendor of vendors; track vendor.vendorId) {
+                                        <option [ngValue]="vendor.vendorId">{{ vendor.vendorName }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Schedule Date *</label>
+                                <input type="date" [(ngModel)]="newSchedule.scheduleDate" name="date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>From Location *</label>
+                                <select [(ngModel)]="newSchedule.fromLocationId" (change)="newSchedule.fromLocationId = +newSchedule.fromLocationId" name="from" class="form-control">
+                                    <option value="">Select Location</option>
+                                    @for (location of locations; track location.locationId) {
+                                        <option [ngValue]="location.locationId">{{ location.locationName }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>To Location *</label>
+                                <select [(ngModel)]="newSchedule.toLocationId" (change)="newSchedule.toLocationId = +newSchedule.toLocationId" name="to" class="form-control">
+                                    <option value="">Select Location</option>
+                                    @for (location of locations; track location.locationId) {
+                                        <option [ngValue]="location.locationId">{{ location.locationName }}</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label>Departure Time</label>
+                                <input type="time" [(ngModel)]="newSchedule.departureTime" name="depTime" class="form-control">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Reaching Time</label>
+                                <input type="time" [(ngModel)]="newSchedule.reachingTime" name="reachTime" class="form-control">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Total Seats</label>
+                                <input type="number" [(ngModel)]="newSchedule.totalSeats" name="seats" class="form-control" min="1" max="60">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Price (₹)</label>
+                                <input type="number" [(ngModel)]="newSchedule.price" name="price" class="form-control" min="100">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Bus Type</label>
+                            <select [(ngModel)]="newSchedule.busType" name="busType" class="form-control">
+                                <option value="AC Seater">AC Seater</option>
+                                <option value="AC Sleeper">AC Sleeper</option>
+                                <option value="Non-AC">Non-AC</option>
+                                <option value="Premium AC">Premium AC</option>
+                                <option value="Luxury">Luxury</option>
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-red" (click)="saveSchedule()">
+                                <i class="bi bi-check-circle"></i> {{ editingSchedule ? 'Update' : 'Create' }} Schedule
+                            </button>
+                            <button type="button" class="btn btn-secondary" (click)="closeForm()">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+
+        <!-- Schedules List -->
+        <div class="schedules-list">
+            <h3>{{ activeTab === 'nagpur-pune' ? 'Nagpur to Pune Schedules' : 'All Schedules' }}</h3>
+
+            @if (filteredSchedules.length === 0) {
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No schedules found. Click "Add Schedule" to create one.</p>
+                </div>
+            } @else {
+                <div class="schedules-grid">
+                    @for (schedule of filteredSchedules; track schedule.scheduleId) {
+                        <div class="schedule-card">
+                            <div class="schedule-header">
+                                <h4>{{ getVendorName(schedule.vendorId) }}</h4>
+                                <span class="bus-type">{{ schedule.busType }}</span>
+                            </div>
+                            <div class="schedule-route">
+                                <div class="location-box">
+                                    <span class="time">{{ schedule.departureTime }}</span>
+                                    <p>{{ getLocationName(schedule.fromLocationId) }}</p>
+                                </div>
+                                <div class="route-line">
+                                    <i class="bi bi-arrow-right"></i>
+                                </div>
+                                <div class="location-box">
+                                    <span class="time">{{ schedule.reachingTime }}</span>
+                                    <p>{{ getLocationName(schedule.toLocationId) }}</p>
+                                </div>
+                            </div>
+                            <div class="schedule-details">
+                                <div class="detail">
+                                    <i class="bi bi-people"></i>
+                                    <span>{{ schedule.totalSeats }} Seats</span>
+                                </div>
+                                <div class="detail price">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <span>₹{{ schedule.price }}</span>
+                                </div>
+                                <div class="detail">
+                                    <i class="bi bi-calendar"></i>
+                                    <span>{{ schedule.scheduleDate | date: 'dd-MMM-yyyy' }}</span>
+                                </div>
+                            </div>
+                            <div class="schedule-actions">
+                                <button class="btn btn-sm btn-edit" (click)="openEditForm(schedule)">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-delete" (click)="deleteSchedule(schedule.scheduleId)">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,101 +1,146 @@
-<section id="booking-form" class="my-4"  >
-    <div class="container mt-5">
-        <div class="row">
-            
-            <div class="col-4">
-                <div class="row">
-                    <div class="col-12 text-center">
-                       <h5> Bus Seats</h5>  
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-4 text-center">
-                        <div class="seat reserved p-3 w-100">
+<section id="booking-form" class="py-5 booking-section">
+    <div class="container-lg mt-4">
+        <h2 class="booking-title">Complete Your Booking</h2>
+        <div class="row" style="gap: 30px;">
 
-                        </div>
-                        Booked
+            <!-- Seat Selection Panel -->
+            <div class="col-lg-4">
+                <div class="card booking-card">
+                    <div class="card-header-red">
+                        <h5 class="card-title">Bus Seat Selection</h5>
+                        <p class="card-subtitle">Choose your preferred seats</p>
                     </div>
-                    <div class="col-4 text-center">
-                        <div class="seat available p-3 w-100">
-
-                        </div>
-                        Available
-                    </div>
-                    <div class="col-4 text-center">
-                        <div class="seat selected p-3 w-100">
-
-                        </div>
-                        Selection
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    @for (seatNo of seatArray; track $index) {
-
-                        @if(checkIfSeatBooked(seatNo) != -1) {
-                            <div class="col-3">
-                                <div class="seat reserved"> {{seatNo}}</div>
+                    <div class="card-body-seat">
+                        <div class="seat-legend">
+                            <div>
+                                <div class="seat available"></div>
+                                <p>Available</p>
                             </div>
-                        } @else {
-                            @if(checkIsSeatSelected(seatNo) != -1) {
-                                <div class="col-3">
-                                    <div class="seat selected" (click)="selectSeat(seatNo)"> {{seatNo}}</div>
-                                </div>
-                            } @else {
-                                <div class="col-3">
-                                    <div class="seat available" (click)="selectSeat(seatNo)"> {{seatNo}}</div>
-                                </div>
+                            <div>
+                                <div class="seat selected"></div>
+                                <p>Selected</p>
+                            </div>
+                            <div>
+                                <div class="seat reserved"></div>
+                                <p>Booked</p>
+                            </div>
+                        </div>
+                        <div class="seat-grid">
+                            @for (seatNo of seatArray; track $index) {
+                                @if(checkIfSeatBooked(seatNo) != -1) {
+                                    <div>
+                                        <div class="seat reserved">{{seatNo}}</div>
+                                    </div>
+                                } @else {
+                                    @if(checkIsSeatSelected(seatNo) != -1) {
+                                        <div>
+                                            <div class="seat selected" (click)="selectSeat(seatNo)">{{seatNo}}</div>
+                                        </div>
+                                    } @else {
+                                        <div>
+                                            <div class="seat available" (click)="selectSeat(seatNo)">{{seatNo}}</div>
+                                        </div>
+                                    }
+                                }
                             }
-                            
-                        }
-                       
-                    }
-                    
-                     
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-8">
-                <h4>Passnger Details</h4>
-                @if (userSelectedSeatArray.length ==0) {
-                    <div class="row">
-                        <div class="col-12 pt-5 text-center">
-                          <p>Please Select Seats to Enter Passenger details</p>
-                        </div>
-                      </div>
-                } @else { 
-                    @for (item of userSelectedSeatArray; track $index) {
-                        <div class="row">
-                            <div class="col-3">
-                                <label>Passenger </label>
-                                <input type="text" [(ngModel)]="item.passengerName" class="form-control">
+
+            <!-- Passenger Details Panel -->
+            <div class="col-lg-8">
+                <div class="card booking-card">
+                    <div class="card-header-blue">
+                        <h5 class="card-title">Passenger Details</h5>
+                        <p class="card-subtitle">Enter details for each passenger</p>
+                    </div>
+                    <div class="card-body-form">
+                        @if (userSelectedSeatArray.length === 0) {
+                            <div class="empty-state">
+                                <i class="bi bi-hand-index-thumb"></i>
+                                <p>Select seats from the left panel</p>
                             </div>
-                            <div class="col-2">
-                                <label>Age</label>
-                                <input type="text"  [(ngModel)]="item.age" class="form-control">
-                            </div>
-                            <div class="col-2">
-                                <label>Gender</label>
-                                <select [(ngModel)]="item.gender" class="form-control">
-                                    <option value="Male">Male</option>
-                                    <option value="Fe-Male">Fe-Male</option>
-                                </select>
-                               
-                            </div>
-                            <div class="col-2">
-                                <label>Seat No</label>
-                                <input disabled type="text"  [(ngModel)]="item.seatNo" class="form-control">
-                            </div>
-                        </div>
-                    }
-                }
-                
-                   
-            </div>
-        </div> 
-        <div class="row">
-            <div class="col-12 text-center">
-                <button class="btn btn-danger" (click)="bookNow()">Book Now</button>
+                        }
+                        @if (userSelectedSeatArray.length > 0) {
+                            <form>
+                                @for (item of userSelectedSeatArray; track $index) {
+                                    <div class="passenger-section">
+                                        <h6 class="passenger-title">Passenger {{$index + 1}} - Seat {{item}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label>Name</label>
+                                                <input type="text" [(ngModel)]="passengers[$index].name" class="form-control" placeholder="Full Name" name="name{{$index}}">
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label>Age</label>
+                                                <input type="number" [(ngModel)]="passengers[$index].age" class="form-control" placeholder="Age" name="age{{$index}}">
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label>Gender</label>
+                                                <select [(ngModel)]="passengers[$index].gender" class="form-control" name="gender{{$index}}">
+                                                    <option value="">Select</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </form>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
-      </div> 
+
+        <!-- Booking Confirmation Footer -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="booking-footer">
+                    <div>
+                        <p class="footer-label">Total Seats Selected</p>
+                        <h3 class="footer-count">{{userSelectedSeatArray.length}}</h3>
+                    </div>
+                    @if (!paymentSuccess) {
+                        <button class="btn btn-red" (click)="bookNow()" [disabled]="userSelectedSeatArray.length === 0">
+                            <i class="bi bi-check-circle"></i>Confirm Booking & Pay
+                        </button>
+                    } @else {
+                        <button class="btn btn-success" disabled>
+                            <i class="bi bi-check-circle"></i>Booking Confirmed
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
+<!-- Payment Modal -->
+@if (showPaymentModal) {
+    <div class="payment-modal-overlay">
+        <div class="payment-modal">
+            <div class="modal-header">
+                <h4>Complete Payment</h4>
+                <button class="close-btn" (click)="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                @if (scehduielData && passengers.length > 0) {
+                    <app-payment
+                        [bookingAmount]="bookingAmount"
+                        [bookingId]="bookingId"
+                        [customerEmail]="passengers[0].email || 'customer@example.com'"
+                        [customerPhone]="passengers[0].phone || '9999999999'"
+                        [customerName]="passengers[0].name"
+                        [busRate]="500"
+                        [numberOfSeats]="userSelectedSeatArray.length"
+                        (paymentSuccess)="onPaymentSuccess($event)"
+                        (paymentFailed)="onPaymentFailed($event)">
+                    </app-payment>
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,212 @@
+<section class="tickets-section py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+  <div class="container-lg">
+    <!-- Header -->
+    <div class="tickets-header mb-5" style="text-align: center; color: white;">
+      <h1 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+        <i class="bi bi-ticket-perforated"></i> My Tickets & Bookings
+      </h1>
+      <p style="font-size: 16px; opacity: 0.9;">View and manage all your bus bookings</p>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="row mb-5">
+      <div class="col-lg-12">
+        <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden;">
+          <div class="card-body" style="padding: 25px; background: white; display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+            <!-- Search -->
+            <div>
+              <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Search by Route or Booking ID</label>
+              <input type="text" [(ngModel)]="searchText" (change)="onFilterChange()" placeholder="e.g., Nagpur to Pune or BK001" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px;">
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+              <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block; font-size: 14px;">Filter by Status</label>
+              <select [(ngModel)]="filterStatus" (change)="onFilterChange()" class="form-control" style="border-radius: 8px; border: 2px solid #e0e0e0; padding: 10px;">
+                <option value="all">All Bookings</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <!-- Count -->
+            <div style="text-align: center;">
+              <p style="color: #999; font-size: 12px; margin: 0;">Total Bookings</p>
+              <h4 style="color: #667eea; font-weight: 700; margin: 0; font-size: 24px;">{{ filteredBookings.length }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings List -->
+    <div class="row">
+      @if (filteredBookings.length === 0) {
+        <div class="col-12">
+          <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); text-align: center; padding: 60px 20px; background: white;">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #999;"></i>
+            <h4 style="margin-top: 20px; color: #666;">No bookings found</h4>
+            <p style="color: #999; margin-top: 10px;">Start exploring and book your first bus ticket!</p>
+          </div>
+        </div>
+      } @else {
+        @for (booking of filteredBookings; track booking.bookingId) {
+          <div class="col-lg-12 mb-4">
+            <div class="ticket-card" style="border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15); background: white; transition: all 0.3s ease;">
+              <div style="display: grid; grid-template-columns: 1fr 2fr 1fr auto; gap: 20px; padding: 25px; align-items: center;">
+                <!-- Status Badge -->
+                <div style="text-align: center;">
+                  <div style="font-size: 2.5rem; margin-bottom: 10px;">
+                    <i [ngClass]="getStatusIcon(booking.status)" [style.color]="getStatusBadgeColor(booking.status)"></i>
+                  </div>
+                  <span style="display: inline-block; padding: 8px 15px; border-radius: 25px; font-weight: 600; font-size: 12px; color: white;" [style.backgroundColor]="getStatusBadgeColor(booking.status)">
+                    {{ booking.status | uppercase }}
+                  </span>
+                  @if (isJourneyUpcoming(booking.journeyDate)) {
+                    <p style="color: #17a2b8; font-size: 12px; margin-top: 8px; font-weight: 600;">
+                      <i class="bi bi-info-circle"></i> Upcoming
+                    </p>
+                  }
+                </div>
+
+                <!-- Journey Details -->
+                <div>
+                  <h5 style="color: #333; font-weight: 700; font-size: 16px; margin-bottom: 10px;">
+                    <i class="bi bi-map"></i> {{ booking.from }} → {{ booking.to }}
+                  </h5>
+                  <p style="color: #666; font-size: 14px; margin: 5px 0;">
+                    <strong>Date:</strong> {{ booking.journeyDate | date: 'dd MMM yyyy' }}
+                  </p>
+                  <p style="color: #666; font-size: 14px; margin: 5px 0;">
+                    <strong>Vendor:</strong> {{ booking.vendorName }} ({{ booking.busType }})
+                  </p>
+                  <p style="color: #666; font-size: 14px; margin: 5px 0;">
+                    <strong>Seats:</strong> <span style="background: #f0f0f0; padding: 2px 8px; border-radius: 4px;">{{ booking.seats.join(', ') }}</span>
+                  </p>
+                </div>
+
+                <!-- Pricing -->
+                <div style="text-align: right;">
+                  <p style="color: #999; font-size: 12px; margin: 0;">Amount Paid</p>
+                  <h4 style="color: #667eea; font-weight: 700; font-size: 20px; margin: 5px 0;">₹{{ booking.totalAmount }}</h4>
+                  <p style="color: #999; font-size: 11px; margin-top: 8px;">
+                    @if (booking.discount > 0) {
+                      Saved ₹{{ booking.discount }}
+                    } @else {
+                      No discount
+                    }
+                  </p>
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <button (click)="viewDetails(booking)" class="btn" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; padding: 10px 15px; font-weight: 600; border: none; font-size: 13px; cursor: pointer; white-space: nowrap;">
+                    <i class="bi bi-eye"></i> View Details
+                  </button>
+                  <button (click)="downloadTicket(booking)" class="btn" style="background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; padding: 10px 15px; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap;">
+                    <i class="bi bi-download"></i> Download
+                  </button>
+                  @if (booking.status !== 'cancelled' && isJourneyUpcoming(booking.journeyDate)) {
+                    <button (click)="cancelBooking(booking.bookingId)" class="btn" style="background: #dc3545; color: white; border-radius: 8px; padding: 10px 15px; font-weight: 600; border: none; font-size: 13px; cursor: pointer; white-space: nowrap;">
+                      <i class="bi bi-trash"></i> Cancel
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <div style="height: 1px; background: linear-gradient(90deg, transparent, #e0e0e0, transparent);"></div>
+
+              <!-- Booking ID -->
+              <div style="padding: 0 25px 10px 25px; color: #999; font-size: 12px;">
+                <strong>Booking ID:</strong> {{ booking.bookingId }} | <strong>Booked on:</strong> {{ booking.bookingDate | date: 'dd MMM yyyy, hh:mm a' }}
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  @if (showDetails && selectedBooking) {
+    <div class="modal-overlay" (click)="closeDetails()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease;">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="background: white; border-radius: 15px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease;">
+        <!-- Modal Header -->
+        <div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; font-weight: 700;">Booking Details</h3>
+          <button (click)="closeDetails()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">
+            ×
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 30px;">
+          <!-- Booking ID -->
+          <div class="detail-section" style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 12px; text-transform: uppercase; margin: 0;">Booking ID</p>
+            <p style="color: #333; font-weight: 700; font-size: 18px; margin: 5px 0;">{{ selectedBooking.bookingId }}</p>
+          </div>
+
+          <!-- Journey Info -->
+          <div class="detail-section" style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 12px; text-transform: uppercase; margin: 0;">Journey Information</p>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+              <p style="color: #333; margin: 5px 0;"><strong>Route:</strong> {{ selectedBooking.from }} → {{ selectedBooking.to }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Date:</strong> {{ selectedBooking.journeyDate | date: 'dd MMMM yyyy' }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Time:</strong> {{ selectedBooking.departureTime }}</p>
+            </div>
+          </div>
+
+          <!-- Bus Info -->
+          <div class="detail-section" style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 12px; text-transform: uppercase; margin: 0;">Bus Information</p>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+              <p style="color: #333; margin: 5px 0;"><strong>Vendor:</strong> {{ selectedBooking.vendorName }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Bus Type:</strong> {{ selectedBooking.busType }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Seats:</strong> {{ selectedBooking.seats.join(', ') }}</p>
+            </div>
+          </div>
+
+          <!-- Passenger Info -->
+          <div class="detail-section" style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 12px; text-transform: uppercase; margin: 0;">Passenger Information</p>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+              <p style="color: #333; margin: 5px 0;"><strong>Name:</strong> {{ selectedBooking.passengerName }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Email:</strong> {{ userEmail }}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Phone:</strong> {{ selectedBooking.phoneNumber }}</p>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="detail-section" style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 12px; text-transform: uppercase; margin: 0;">Price Breakdown</p>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                <span style="color: #333;">Ticket Price</span>
+                <span style="color: #333; font-weight: 600;">₹{{ selectedBooking.ticketPrice }}</span>
+              </div>
+              @if (selectedBooking.discount > 0) {
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                  <span style="color: #28a745;">Discount</span>
+                  <span style="color: #28a745; font-weight: 600;">-₹{{ selectedBooking.discount }}</span>
+                </div>
+              }
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 8px;">
+                <span style="color: #333; font-weight: 700;">Total Amount</span>
+                <span style="color: #667eea; font-weight: 700; font-size: 16px;">₹{{ selectedBooking.totalAmount }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Close Button -->
+          <button (click)="closeDetails()" class="btn w-100" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; padding: 12px; font-weight: 600; border: none; cursor: pointer;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

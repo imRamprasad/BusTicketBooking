@@ -1,0 +1,56 @@
+:host {
+  --primary-red: #cc0000;
+  --accent-yellow: #fbbf24;
+}
+
+.navbar-brand {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+/* Navigation link styles */
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--accent-yellow);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover:after {
+  width: 100%;
+}
+
+.nav-link.active {
+  color: var(--accent-yellow) !important;
+}
+
+/* Modal styles */
+.modal-header {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+  background: white;
+  transition: all 0.3s ease;
+}
+
+/* Form input animations */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+  transform: scale(1.02);
+}

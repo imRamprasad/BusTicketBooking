@@ -64,7 +64,8 @@
               "buildTarget": "bus-booking-angular-18:build:production"
             },
             "development": {
-              "buildTarget": "bus-booking-angular-18:build:development"
+              "buildTarget": "bus-booking-angular-18:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -94,5 +95,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "9c8352ff-3f40-4816-912c-7c3e0f19e140"
   }
 }

@@ -1,0 +1,151 @@
+<div class="payment-container">
+  <div class="payment-card">
+    <!-- Payment Header -->
+    <div class="payment-header">
+      <h3>Complete Payment</h3>
+      <p class="payment-subtitle">Secure payment with QR Code</p>
+    </div>
+
+    <!-- Success State -->
+    @if (paymentSuccess$) {
+      <div class="alert alert-success">
+        <i class="bi bi-check-circle"></i>
+        <div>
+          <strong>Payment Successful!</strong>
+          <p>Your payment has been processed successfully. Your booking is confirmed.</p>
+        </div>
+      </div>
+      <button class="btn btn-success btn-block" disabled>
+        <i class="bi bi-check"></i> Payment Completed
+      </button>
+    }
+
+    <!-- Error State -->
+    @if (paymentError && !paymentSuccess$) {
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        <div>
+          <strong>Payment Failed</strong>
+          <p>{{ paymentError }}</p>
+        </div>
+      </div>
+      <button class="btn btn-danger btn-block" (click)="retryPayment()" [disabled]="isProcessing">
+        <i class="bi bi-arrow-clockwise"></i> Retry Payment
+      </button>
+    }
+
+    <!-- QR Code Payment -->
+    @if (showQRCode && !paymentSuccess$) {
+      <div class="qr-payment-section">
+        <div class="qr-header">
+          <h5>Scan QR Code to Pay</h5>
+          <p>Time remaining: <span class="timer">{{ getTimeRemaining() }}</span></p>
+        </div>
+
+        <div class="qr-code-container">
+          <img [src]="qrCodeUrl" alt="Payment QR Code" class="qr-code" />
+          <p class="qr-instructions">
+            Scan this QR code with any UPI app (Google Pay, PhonePe, Paytm, etc.)
+          </p>
+        </div>
+
+        <div class="payment-details-qr">
+          <div class="bus-rate-info">
+            <div class="rate-row">
+              <span class="rate-label">Bus Rate per Seat:</span>
+              <span class="rate-value">₹{{ busRate }}</span>
+            </div>
+            <div class="rate-row">
+              <span class="rate-label">Number of Seats:</span>
+              <span class="rate-value">{{ numberOfSeats }}</span>
+            </div>
+            <div class="rate-row total">
+              <span class="rate-label">Total Amount:</span>
+              <span class="rate-value">{{ getFormattedAmount() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-actions">
+          <button class="btn btn-success btn-block" (click)="completePayment()" [disabled]="isProcessing">
+            @if (isProcessing) {
+              <span><i class="bi bi-hourglass-split"></i> Processing...</span>
+            } @else {
+              <span><i class="bi bi-check-circle"></i> I've Completed Payment</span>
+            }
+          </button>
+
+          <button class="btn btn-outline-secondary btn-block" (click)="cancelPayment()">
+            <i class="bi bi-x-circle"></i> Cancel Payment
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Initial Payment Setup -->
+    @if (!showQRCode && !paymentSuccess$ && !paymentError) {
+      <div class="payment-details">
+        <!-- Amount Section -->
+        <div class="amount-section">
+          <div class="amount-row">
+            <span>Booking Amount:</span>
+            <span class="amount-value">{{ getFormattedAmount() }}</span>
+          </div>
+          <div class="divider"></div>
+          <div class="amount-row total">
+            <span>Total Payable:</span>
+            <span class="amount-value">{{ getFormattedAmount() }}</span>
+          </div>
+        </div>
+
+        <!-- Customer Info Section -->
+        <div class="customer-info">
+          <h5>Payment Details</h5>
+          <div class="info-row">
+            <span class="label">Name:</span>
+            <span class="value">{{ customerName }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ customerEmail }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Phone:</span>
+            <span class="value">{{ customerPhone }}</span>
+          </div>
+        </div>
+
+        <!-- Security Info -->
+        <div class="security-info">
+          <i class="bi bi-shield-lock"></i>
+          <p>Your payment information is secure and encrypted</p>
+        </div>
+
+        <!-- Generate QR Button -->
+        <button
+          class="btn btn-pay btn-block"
+          (click)="generatePaymentOrder()"
+          [disabled]="isProcessing"
+        >
+          @if (isProcessing) {
+            <span>
+              <i class="bi bi-hourglass-split"></i> Setting up payment...
+            </span>
+          } @else {
+            <span>
+              <i class="bi bi-qr-code"></i> Generate QR Code
+            </span>
+          }
+        </button>
+      </div>
+    }
+
+    <!-- Footer Info -->
+    <div class="payment-footer">
+      <p>
+        <i class="bi bi-info-circle"></i>
+        Scan the QR code with your UPI app to complete the payment securely.
+      </p>
+    </div>
+  </div>
+</div>

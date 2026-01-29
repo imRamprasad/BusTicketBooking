@@ -1,50 +1,182 @@
-/* You can add global styles to this file, and also import other style files */
-.search-form {
-    background-color: #F05A58; /* Background color similar to the image */
-    padding: 20px;
-    border-radius: 40px;
-  }
-  .search-form .form-control {
-    border-radius: 20px  !important;
-  }
-  .search-form .form-select {
-    border-radius: 20px !important;
-  }
-  .search-form button {
-    border-radius: 20px;
-  }
-  .search-form .input-group-text {
-    background-color: transparent;
-    border: none;
-  }
+/* Red Bus Theme - Global Styles */
+:root {
+  --primary-red: #cc0000;
+  --primary-red-dark: #990000;
+  --primary-blue: #1e40af;
+  --accent-yellow: #fbbf24;
+  --light-gray: #f3f4f6;
+  --dark-gray: #374151;
+  --white: #ffffff;
+  --border-color: #e5e7eb;
+}
 
-  .bus-layout {
-background-color: #f8f9fa;
-padding: 20px;
-border-radius: 10px;
-width: 400px;
-margin: auto;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+}
+
+.search-form {
+  background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(204, 0, 0, 0.2);
+}
+
+.search-form .form-control,
+.search-form .form-select {
+  border-radius: 8px !important;
+  border: 2px solid var(--border-color);
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.search-form .form-control:focus,
+.search-form .form-select:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.search-form button {
+  border-radius: 8px;
+  background-color: var(--accent-yellow);
+  color: var(--primary-red-dark);
+  font-weight: 600;
+  border: none;
+  padding: 12px 30px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.search-form button:hover {
+  background-color: #fcd34d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
+}
+
+.search-form .input-group-text {
+  background-color: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 18px;
+}
+
+.bus-layout {
+  background-color: var(--white);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  margin: auto;
+}
+
 .seat {
-width: 30px;
-height: 30px;
-margin: 5px;
-border: 2px solid #ddd;
-border-radius: 5px;
-cursor: pointer;
+  width: 40px;
+  height: 40px;
+  margin: 5px;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
+
+.seat:hover:not(.reserved) {
+  transform: scale(1.1);
+}
+
 .seat.available {
-background-color: #fff;
+  background-color: var(--white);
+  color: var(--dark-gray);
+  border-color: var(--border-color);
 }
+
 .seat.selected {
-background-color: #F05A58;
+  background-color: var(--primary-red);
+  color: var(--white);
+  border-color: var(--primary-red-dark);
 }
+
 .seat.reserved {
-background-color: #A9A9A9;
-cursor: not-allowed;
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #d1d5db;
 }
+
 .driver {
-width: 30px;
-height: 30px;
-margin-right: 10px;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+/* Card Styles */
+.card {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+/* Button Styles */
+.btn-red {
+  background-color: var(--primary-red);
+  color: var(--white);
+  border: none;
+}
+
+.btn-red:hover {
+  background-color: var(--primary-red-dark);
+  color: var(--white);
+}
+
+.btn-blue {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+}
+
+.btn-blue:hover {
+  background-color: #1e3a8a;
+  color: var(--white);
+}
+
+/* Badge Styles */
+.badge-red {
+  background-color: var(--primary-red);
+  color: var(--white);
+}
+
+.badge-green {
+  background-color: #10b981;
+  color: var(--white);
+}
+
+/* Alert Styles */
+.alert {
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+/* Form Styles */
+.form-label {
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 8px;
 }
